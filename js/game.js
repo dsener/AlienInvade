@@ -65,7 +65,7 @@ Alien.prototype.die = function() {
 Alien.prototype.step = function(dt) {
   this.mx += dt * this.flock.dx;
   this.y += this.flock.dy;
-  if(Math.abs(this.mx) > 10) {
+  if(Math.abs(this.mx) > 2) {
     if(this.y == this.flock.max_y[this.x]) {
       this.fireSometimes();
     }
@@ -79,7 +79,7 @@ Alien.prototype.step = function(dt) {
 }
 
 Alien.prototype.fireSometimes = function() {
-      if(Math.random()*100 < 10) {
+      if(Math.random()*100 < 1) {
         this.board.addSprite('missile',this.x + this.w/2 - Sprites.map.missile.w/2,
                                       this.y + this.h, 
                                      { dy: 100 });
@@ -109,7 +109,7 @@ Player.prototype.step = function(dt) {
 
   this.reloading--;
 
-  if(Game.keys['fire'] && this.reloading <= 0 && this.board.missiles < 3) {
+  if(Game.keys['fire'] && this.reloading <= 0 && this.board.missiles < 1) {
     GameAudio.play('fire');
     this.board.addSprite('missile',
                           this.x + this.w/2 - Sprites.map.missile.w/2,

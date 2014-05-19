@@ -24,9 +24,9 @@ var Game = new function() {
   this.loadBoard = function(board) { Game.board = board; };
 
   this.loop = function() { 
-    Game.board.step(30/1000); 
+    Game.board.step(20/1000); 
     Game.board.render(Game.canvas);
-    setTimeout(Game.loop,30);
+    setTimeout(Game.loop,5);
   };
 };
 
