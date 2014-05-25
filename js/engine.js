@@ -23,8 +23,9 @@ var Game = new function() {
 
   this.loadBoard = function(board) { Game.board = board; };
 
-  this.loop = function() { 
-    Game.board.step(20/1000); 
+  this.loop = function() {
+	  //game speed 
+    Game.board.step(35/1000); 
     Game.board.render(Game.canvas);
     setTimeout(Game.loop,5);
   };
@@ -53,12 +54,13 @@ var GameScreen = function GameScreen(text,text2,callback) {
   };
 
   this.render = function(canvas) {
+	  //başlangıç fontları
     canvas.clearRect(0,0,Game.width,Game.height);
-    canvas.font = "bold 40px arial";
+    canvas.font = "80px topmodern" ;
     var measure = canvas.measureText(text);  
-    canvas.fillStyle = "#FFFFFF";
+    canvas.fillStyle = "#00173c";
     canvas.fillText(text,Game.width/2 - measure.width/2,Game.height/2);
-    canvas.font = "bold 20px arial";
+    canvas.font = " 25px topmodern";
     var measure2 = canvas.measureText(text2);
     canvas.fillText(text2,Game.width/2 - measure2.width/2,Game.height/2 + 40);
   };

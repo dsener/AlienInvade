@@ -5,7 +5,7 @@ var AlienFlock = function AlienFlock() {
   this.dx = 10; this.dy = 0;
   this.hit = 1; this.lastHit = 0;
   //aliens speed
-  this.speed = 10;
+  this.speed = 8;
 
   this.draw = function() {};
 
@@ -65,7 +65,7 @@ Alien.prototype.die = function() {
 Alien.prototype.step = function(dt) {
   this.mx += dt * this.flock.dx;
   this.y += this.flock.dy;
-  if(Math.abs(this.mx) > 2) {
+  if(Math.abs(this.mx) > 4) {
     if(this.y == this.flock.max_y[this.x]) {
       this.fireSometimes();
     }
@@ -77,9 +77,9 @@ Alien.prototype.step = function(dt) {
   }
   return true;
 }
-
+//düşman ateşi
 Alien.prototype.fireSometimes = function() {
-      if(Math.random()*100 < 1) {
+      if(Math.random()*100 < 2) {
         this.board.addSprite('missile',this.x + this.w/2 - Sprites.map.missile.w/2,
                                       this.y + this.h, 
                                      { dy: 100 });
@@ -146,4 +146,11 @@ Missile.prototype.die = function() {
   if(this.player) this.board.missiles--;
   if(this.board.missiles < 0) this.board.missiles=0;
    this.board.remove(this);
+}
+
+window.addEventListener("resize", OnResizeCalled, false); 
+ 
+function OnResizeCalled() { 
+    canvas.style.width = window.innerWidth + 'px'; 
+    canvas.style.height = window.innerHeight + 'px'; 
 }

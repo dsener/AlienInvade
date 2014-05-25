@@ -45,7 +45,7 @@
   }
 
   function startGame() {
-    var screen = new GameScreen("Alien Invaders","press space to start",
+    var screen = new GameScreen("Loch Ness","Press Space to Start",
                                  function() {
                                      Game.loadBoard(new GameBoard(1));
                                  });
