@@ -5,7 +5,7 @@ var AlienFlock = function AlienFlock() {
   this.dx = 10; this.dy = 0;
   this.hit = 1; this.lastHit = 0;
   //aliens speed
-  this.speed = 8;
+  this.speed = 10;
 
   this.draw = function() {};
 
@@ -60,18 +60,18 @@ Alien.prototype.die = function() {
   GameAudio.play('die');
   this.flock.speed += 1;
   this.board.remove(this);
+  this.board.score++;
 }
 
 Alien.prototype.step = function(dt) {
   this.mx += dt * this.flock.dx;
   this.y += this.flock.dy;
-  if(Math.abs(this.mx) > 4) {
+  if(Math.abs(this.mx) > 10) {
     if(this.y == this.flock.max_y[this.x]) {
       this.fireSometimes();
     }
     this.x += this.mx;
     this.mx = 0;
-    this.frame = (this.frame+1) % 2;
     if(this.x > Game.width - Sprites.map.alien1.w * 2) this.flock.hit = -1;
     if(this.x < Sprites.map.alien1.w) this.flock.hit = 1;
   }
@@ -79,19 +79,39 @@ Alien.prototype.step = function(dt) {
 }
 //düşman ateşi
 Alien.prototype.fireSometimes = function() {
-      if(Math.random()*100 < 2) {
+      if(Math.random()*100 < 4) {
         this.board.addSprite('missile',this.x + this.w/2 - Sprites.map.missile.w/2,
                                       this.y + this.h, 
                                      { dy: 100 });
       }
 }
 
+
+
+//planet trials
+var Planet = function Planet(opts) {
+   this.dy = opts.dy;
+   this.player = opts.player;
+}
+
+Planet.prototype.draw = function(canvas) {
+   Sprites.draw(canvas,'planet',this.x,this.y);
+}
+
+Planet.prototype.step = function(dt) {
+   this.y += this.dy * dt;
+   return true;
+   }
+
+//planet trials
+
 var Player = function Player(opts) { 
   this.reloading = 0;
+  this.frame = 0;
 }
 
 Player.prototype.draw = function(canvas) {
-   Sprites.draw(canvas,'player',this.x,this.y);
+   Sprites.draw(canvas,'player',this.x,this.y,this.frame);
 }
 
 
@@ -101,15 +121,20 @@ Player.prototype.die = function() {
 }
 
 Player.prototype.step = function(dt) {
-  if(Game.keys['left']) { this.x -= 100 * dt; }
-  if(Game.keys['right']) { this.x += 100 * dt; }
+  if(Game.keys['left']) { this.x -= 120 * dt; }
+  if(Game.keys['right']) { this.x += 120 * dt; }
+  if(Game.keys['up']) { this.y -= 120 * dt; }
+  if(Game.keys['down']) { this.y += 120 * dt; }
 
   if(this.x < 0) this.x = 0;
   if(this.x > Game.width-this.w) this.x = Game.width-this.w;
+  this.frame = (this.frame+1) %3;
 
   this.reloading--;
-
-  if(Game.keys['fire'] && this.reloading <= 0 && this.board.missiles < 1) {
+  //player 2
+  
+//missile flow
+  if(Game.keys['fire'] && this.reloading <= 0 && this.board.missiles < 2) {
     GameAudio.play('fire');
     this.board.addSprite('missile',
                           this.x + this.w/2 - Sprites.map.missile.w/2,
@@ -121,6 +146,22 @@ Player.prototype.step = function(dt) {
   return true;
 }
 
+///how to add frictions ask
+//how to collide player with enemy
+
+//var frictionL = .01
+//gravityL= .0322*(interval/feetPerPixel);
+//this.dx = -15;
+//this.dy = -30;
+
+
+//faFactor = (1-frictionL) * (1+accelerL);
+//dx = dx*faFactor;
+//dy = (dy*faFactor); //
+
+
+
+
 
 var Missile = function Missile(opts) {
    this.dy = opts.dy;
@@ -130,6 +171,8 @@ var Missile = function Missile(opts) {
 Missile.prototype.draw = function(canvas) {
    Sprites.draw(canvas,'missile',this.x,this.y);
 }
+
+
 
 Missile.prototype.step = function(dt) {
    this.y += this.dy * dt;
@@ -146,11 +189,8 @@ Missile.prototype.die = function() {
   if(this.player) this.board.missiles--;
   if(this.board.missiles < 0) this.board.missiles=0;
    this.board.remove(this);
-}
+} 
 
-window.addEventListener("resize", OnResizeCalled, false); 
- 
-function OnResizeCalled() { 
-    canvas.style.width = window.innerWidth + 'px'; 
-    canvas.style.height = window.innerHeight + 'px'; 
-}
+
+
+

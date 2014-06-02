@@ -1,5 +1,5 @@
 var Game = new function() {                                                                  
-  var KEY_CODES = { 37:'left', 39:'right', 32 :'fire' };
+  var KEY_CODES = { 37:'left', 39:'right', 38: 'up', 40: 'down', 32 :'fire' };
   this.keys = {};
 
   this.initialize = function(canvas_dom,level_data,sprite_data,callbacks) {
@@ -25,9 +25,9 @@ var Game = new function() {
 
   this.loop = function() {
 	  //game speed 
-    Game.board.step(35/1000); 
+    Game.board.step(30/1000); 
     Game.board.render(Game.canvas);
-    setTimeout(Game.loop,5);
+    setTimeout(Game.loop,10);
   };
 };
 
@@ -56,17 +56,18 @@ var GameScreen = function GameScreen(text,text2,callback) {
   this.render = function(canvas) {
 	  //başlangıç fontları
     canvas.clearRect(0,0,Game.width,Game.height);
-    canvas.font = "80px topmodern" ;
+    canvas.font = "bold 80px topmodern" ;
     var measure = canvas.measureText(text);  
-    canvas.fillStyle = "#00173c";
+    canvas.fillStyle = "white";
     canvas.fillText(text,Game.width/2 - measure.width/2,Game.height/2);
-    canvas.font = " 25px topmodern";
+    canvas.font = " bold 25px topmodern";
     var measure2 = canvas.measureText(text2);
-    canvas.fillText(text2,Game.width/2 - measure2.width/2,Game.height/2 + 40);
+    canvas.fillText(text2,Game.width/2 - measure2.width/2,Game.height/2 + 50);
   };
 };
 
 var GameBoard = function GameBoard(level_number) {
+  this.score = 0;
   this.removed_objs = [];
   this.missiles = 0;
   this.level = level_number;
@@ -113,6 +114,11 @@ var GameBoard = function GameBoard(level_number) {
   this.render = function(canvas) {
     canvas.clearRect(0,0,Game.width,Game.height);
     this.iterate(function() { this.draw(canvas); });
+ 
+  
+  var scoretext = "Score: " + this.score;
+    canvas.font="20px Georgia";
+    canvas.fillText(scoretext,10,50);
   };
 
   this.collision = function(o1,o2) {
@@ -131,7 +137,11 @@ var GameBoard = function GameBoard(level_number) {
     this.objects = [];
     this.player = this.addSprite('player', // Sprite
                                  Game.width/2, // X
-                                 Game.height - Sprites.map['player'].h - 10); // Y
+                                 Game.height - Sprites.map['player'].h -10); // Y
+								 				 
+		
+		
+
 
     var flock = this.add(new AlienFlock());
     for(var y=0,rows=level.length;y<rows;y++) {
@@ -140,12 +150,24 @@ var GameBoard = function GameBoard(level_number) {
         if(alien) { 
           this.addSprite('alien' + level[y][x], // Which Sprite
                          (alien.w+10)*x,  // X
-                         alien.h*y,       // Y
+                         alien.h*y -370,       // Y
                          { flock: flock }); // Options
         }
       }
+	
     }
   };
+  //background canvas olarakmı iyi yoksa direk indextenmi
+  //mesela damage variable nasıl taşınıcak buraya
+ // planet nasıl ekliycem ( obje nasıl ekleniyo),başka oyundan başka oyuna kod taşımak nasıl olur 
+//nasıl sadece ön sıra ateş edicek sor
+//player hareketi nasıl yumuşar
+//uzaylı yerleri bi garip niye -370 gerekti
+//alienlar fazlamı büyük oldu
+//her bastığında ateş etmesini istiyorum tek seferde 2 ateş etmesin her seferinde basmak gereksin space'e
+//class nasıl yaratılıyo öğrendiğim şekle hiç benzemiyo burdaki
+
+
 
   this.nextLevel = function() { 
     return Game.level_data[level_number + 1] ? (level_number + 1) : false 
@@ -153,6 +175,15 @@ var GameBoard = function GameBoard(level_number) {
  
   this.loadLevel(Game.level_data[level_number]);
 };
+
+
+//planet trials
+this.loadLevel = function(level) {
+    this.objects = [];
+    this.planet = this.addSprite('planet', // Sprite
+                                 Game.width/2, // X
+                                 Game.height - Sprites.map['planet'].h -30); }; // Y
+//planet trials
 
 var GameAudio = new function() {
   this.load_queue = [];
