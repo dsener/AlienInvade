@@ -1,5 +1,5 @@
 var Game = new function() {                                                                  
-  var KEY_CODES = { 37:'left', 39:'right', 38: 'up', 40: 'down', 32 :'fire' };
+  var KEY_CODES = { 37:'left', 39:'right', 32 :'fire' };
   this.keys = {};
 
   this.initialize = function(canvas_dom,level_data,sprite_data,callbacks) {
@@ -117,9 +117,11 @@ var GameBoard = function GameBoard(level_number) {
  
   
   var scoretext = "Score: " + this.score;
-    canvas.font="20px Georgia";
+    canvas.font="20px topmodern";
     canvas.fillText(scoretext,10,50);
   };
+  
+  
 
   this.collision = function(o1,o2) {
     return !((o1.y+o1.h-1<o2.y) || (o1.y>o2.y+o2.h-1) ||
@@ -181,8 +183,8 @@ var GameBoard = function GameBoard(level_number) {
 this.loadLevel = function(level) {
     this.objects = [];
     this.planet = this.addSprite('planet', // Sprite
-                                 Game.width/2, // X
-                                 Game.height - Sprites.map['planet'].h -30); }; // Y
+                                 (Game.width - planet.w)/2, // X
+                                 Game.height - (Sprites.map['planet'].h +30)); }; // Y
 //planet trials
 
 var GameAudio = new function() {

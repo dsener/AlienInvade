@@ -38,8 +38,8 @@
           [0,0,1,1,1,1,1,1,1,1,0]] };
 //enemy-player info
   var spriteData = {
-    'alien1': { sx: 69,  sy: 12,  w: 21, h: 47, cls: Alien, frames:3 },
-    'alien2': { sx: 113,  sy: 9, w: 27, h: 47, cls: Alien, frames:3},
+    'alien1': { sx: 69,  sy: 12,  w: 21, h: 47, cls: Alien, },
+    'alien2': { sx: 113,  sy: 9, w: 27, h: 47, cls: Alien, },
     'player': { sx: 1,  sy: 8, w: 51, h: 51, cls: Player, frames:3},
     'missile': { sx: 152,  sy: 10.5, w: 11,  h: 11, cls: Missile },
 	'planet' : { sx: 176,  sy: 7.5, w: 50,  h: 50, cls: Planet }
@@ -72,7 +72,7 @@
   }
 //game sounds
   $(function() {
-    GameAudio.load({ 'fire' : 'media/laser.ogg', 'die' : 'media/explosion.ogg' }, 
+    GameAudio.load({ 'fire' : 'media/lasernew.ogg', 'die' : 'media/bomb.ogg' }, 
                    function() { 
                        Game.initialize("#gameboard", levelData, spriteData,
                                       { "start": startGame,
