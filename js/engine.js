@@ -127,14 +127,14 @@ var GameBoard = function GameBoard(level_number) {
     canvas.clearRect(0,0,Game.width,Game.height);
     this.iterate(function() { this.draw(canvas); });
  
-  
+  //score variable
   var scoretext = "Destroyed: " + this.score;
     canvas.font="12px alienated";
     canvas.fillText(scoretext,10,50);
   };
   
   
-
+//objects collision function
   this.collision = function(o1,o2) {
     return !((o1.y+o1.h-1<o2.y) || (o1.y>o2.y+o2.h-1) ||
              (o1.x+o1.w-1<o2.x) || (o1.x>o2.x+o2.w-1));
@@ -172,7 +172,7 @@ var GameBoard = function GameBoard(level_number) {
     }
   };
 
-
+//loads next level
 
   this.nextLevel = function() { 
     return Game.level_data[level_number + 1] ? (level_number + 1) : false 

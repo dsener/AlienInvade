@@ -163,7 +163,7 @@ Missile.prototype.die = function() {
    this.board.remove(this);
 } 
 
-//The function for the alien animated missile
+//The function for the alien missile
 var Almissile = function Almissile(opts) {
    this.dy = opts.dy;
    this.player = opts.player;
