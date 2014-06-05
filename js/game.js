@@ -1,11 +1,11 @@
 
-
+//Loads flock sets speed and win when all aliens destroyed
 var AlienFlock = function AlienFlock() {
   this.invulnrable = true;
   this.dx = 10; this.dy = 0;
   this.hit = 1; this.lastHit = 0;
   //aliens speed
-  this.speed = 10;
+  this.speed = 25;
 
   this.draw = function() {};
 
@@ -56,17 +56,18 @@ Alien.prototype.draw = function(canvas) {
   Sprites.draw(canvas,this.name,this.x,this.y,this.frame);
 }
 
+//alien die
 Alien.prototype.die = function() {
   GameAudio.play('die');
-  this.flock.speed += 1;
+  this.flock.speed += 1; //increase flock speed when one alien is killed
   this.board.remove(this);
-  this.board.score++;
+  this.board.score++; //increase score
 }
-
+//move alien
 Alien.prototype.step = function(dt) {
   this.mx += dt * this.flock.dx;
   this.y += this.flock.dy;
-  if(Math.abs(this.mx) > 10) {
+  if(Math.abs(this.mx) > 70) {
     if(this.y == this.flock.max_y[this.x]) {
       this.fireSometimes();
     }
@@ -74,100 +75,71 @@ Alien.prototype.step = function(dt) {
     this.mx = 0;
     if(this.x > Game.width - Sprites.map.alien1.w * 2) this.flock.hit = -1;
     if(this.x < Sprites.map.alien1.w) this.flock.hit = 1;
+	//this.frame = (this.frame+1) % 2; //alien frames
+	GameAudio.play('hover');
+	
   }
+  
   return true;
 }
-//düşman ateşi
+//alien fire frequency
 Alien.prototype.fireSometimes = function() {
       if(Math.random()*100 < 4) {
-        this.board.addSprite('missile',this.x + this.w/2 - Sprites.map.missile.w/2,
+        this.board.addSprite('almissile',this.x + this.w/2 - Sprites.map.almissile.w/2,
                                       this.y + this.h, 
                                      { dy: 100 });
       }
 }
 
-
-
-//planet trials
-var Planet = function Planet(opts) {
-   this.dy = opts.dy;
-   this.player = opts.player;
-}
-
-Planet.prototype.draw = function(canvas) {
-   Sprites.draw(canvas,'planet',this.x,this.y);
-}
-
-Planet.prototype.step = function(dt) {
-   this.y += this.dy * dt;
-   return true;
-   }
-
-//planet trials
-
 var Player = function Player(opts) { 
   this.reloading = 0;
-  this.frame = 0;
 }
 
-Player.prototype.draw = function(canvas) {
-   Sprites.draw(canvas,'player',this.x,this.y,this.frame);
+//draw player to canvas
+Player.prototype.draw = function(canvas) { 
+   Sprites.draw(canvas,'player',this.x,this.y);
 }
 
 
 Player.prototype.die = function() {
-  GameAudio.play('die');
-  Game.callbacks['die']();
+  GameAudio.play('die'); //play explosion when player dies
+  Game.callbacks['die'](); //display game over screen
 }
 
+//spaceship control system
 Player.prototype.step = function(dt) {
   if(Game.keys['left']) { this.x -= 120 * dt; }
   if(Game.keys['right']) { this.x += 120 * dt; }
-  if(Game.keys['up']) { this.y -= 120 * dt; }
-  if(Game.keys['down']) { this.y += 120 * dt; }
+
 
   if(this.x < 0) this.x = 0;
   if(this.x > Game.width-this.w) this.x = Game.width-this.w;
-  this.frame = (this.frame+1) %3;
 
   this.reloading--;
-  //player 2
+ 
   
-//missile flow
-  if(Game.keys['fire'] && this.reloading <= 0 && this.board.missiles < 2) {
+//max number of missiles, missile speed, reload time
+  if(Game.keys['fire'] && this.reloading <= 0 && this.board.missiles < 4) {
     GameAudio.play('fire');
     this.board.addSprite('missile',
                           this.x + this.w/2 - Sprites.map.missile.w/2,
                           this.y-this.h,
                           { dy: -100, player: true });
     this.board.missiles++;
-    this.reloading = 10;
+    this.reloading = 20;
   }
   return true;
 }
 
-///how to add frictions ask
-//how to collide player with enemy
 
-//var frictionL = .01
-//gravityL= .0322*(interval/feetPerPixel);
-//this.dx = -15;
-//this.dy = -30;
-
-
-//faFactor = (1-frictionL) * (1+accelerL);
-//dx = dx*faFactor;
-//dy = (dy*faFactor); //
-
-
-
-
+//Player missile function
 
 var Missile = function Missile(opts) {
    this.dy = opts.dy;
    this.player = opts.player;
 }
 
+//draw missile
 Missile.prototype.draw = function(canvas) {
    Sprites.draw(canvas,'missile',this.x,this.y);
 }
@@ -175,9 +147,9 @@ Missile.prototype.draw = function(canvas) {
 
 
 Missile.prototype.step = function(dt) {
-   this.y += this.dy * dt;
+   this.y += this.dy * dt; //player missile speed
 
-   var enemy = this.board.collide(this);
+   var enemy = this.board.collide(this); //collision detector
    if(enemy) { 
      enemy.die();
      return false;
@@ -190,6 +162,58 @@ Missile.prototype.die = function() {
   if(this.board.missiles < 0) this.board.missiles=0;
    this.board.remove(this);
 } 
+
+//The function for the alien animated missile
+var Almissile = function Almissile(opts) {
+   this.dy = opts.dy;
+   this.player = opts.player;
+   this.frame = 0;
+}
+
+Almissile.prototype.draw = function(canvas) {
+   Sprites.draw(canvas,'almissile',this.x,this.y,this.frame);
+}
+
+Almissile.prototype.step = function(dt) {
+   this.y += this.dy * dt;
+
+   var enemy = this.board.collide(this);
+   if(enemy) { 
+     enemy.die();
+     return false;
+   }
+   return (this.y < 0 || this.y > Game.height) ? false : true;
+}
+
+Almissile.prototype.die = function() {
+  if(this.player) this.board.Almissiles--;
+  if(this.board.Almissiles < 0) this.board.Almissiles=0;
+   this.board.remove(this);
+}
+
+//Boss variable
+var Boss = function Boss(opts) {
+  this.dx = opts.dx;
+  this.frame = 0;
+}
+
+Boss.prototype.draw = function(canvas) {
+  Sprites.draw(canvas,'boss',this.x,this.y,this.frame);
+}
+
+Boss.prototype.step = function(dt) {
+  this.x += this.dx;
+  if (this.x < 600) { //stop playing when boss moves out of screen
+      GameAudio.play('boss');
+  }
+  return true;
+}
+
+Boss.prototype.die = function() {
+  this.board.score += 20;; //Killing boss gives 20 points
+  GameAudio.play('die');
+  this.board.remove(this);
+}
 
 
 

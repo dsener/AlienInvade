@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <title>Alien Invaders</title>
+  <title>Ship Shoot</title>
   <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
   <script src='js/engine.js'></script>
   <script src='js/game.js'></script>
@@ -14,12 +14,23 @@
 	font-family:topmodern;
 	src:url(font/Top%20Modern.ttf);
 }
-      #gameboard { background-image:url(images/texture__space_by_Mjag.jpg) }
+
+@font-face{
+	font-family:alienation;
+	src:url(font/alienation.ttf);
+}
+
+@font-face{
+	font-family:alienated;
+	src:url(font/alienated.ttf);
+}
+      #gameboard { background-image:url(images/gPXEMN6.gif) }
       #game-wrapper { margin:0 auto; width: 600px; }
   </style>
 </head>
 <body>
   <div id='game-wrapper'>
+    
     <canvas id='gameboard' width='600' height='600'></canvas>
   </div>
 </body>

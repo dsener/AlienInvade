@@ -1,13 +1,16 @@
+//keyboard buttons
 var Game = new function() {                                                                  
   var KEY_CODES = { 37:'left', 39:'right', 32 :'fire' };
   this.keys = {};
-
+  
+//initialise canvas
   this.initialize = function(canvas_dom,level_data,sprite_data,callbacks) {
     this.canvas_elem = $(canvas_dom)[0];
     this.canvas = this.canvas_elem.getContext('2d');
     this.width = $(this.canvas_elem).attr('width');
     this.height= $(this.canvas_elem).attr('height');
-
+	
+//check if any key is pressed
     $(window).keydown(function(event) {
       if(KEY_CODES[event.keyCode]) Game.keys[KEY_CODES[event.keyCode]] = true;
     });
@@ -23,14 +26,15 @@ var Game = new function() {
 
   this.loadBoard = function(board) { Game.board = board; };
 
+//frame rate and game speed
   this.loop = function() {
-	  //game speed 
-    Game.board.step(30/1000); 
+    Game.board.step(45/1000); 
     Game.board.render(Game.canvas);
     setTimeout(Game.loop,10);
   };
 };
 
+//load spritesheet
 var Sprites = new function() {
   this.map = { }; 
 
@@ -47,22 +51,24 @@ var Sprites = new function() {
     canvas.drawImage(this.image, s.sx + frame * s.w, s.sy, s.w, s.h, x,y, s.w, s.h);
   };
 }
-
+//load start screen
 var GameScreen = function GameScreen(text,text2,callback) {
   this.step = function(dt) {
     if(Game.keys['fire'] && callback) callback();
-  };
-
+	};
+  
+//Menu Screen font style
   this.render = function(canvas) {
-	  //başlangıç fontları
     canvas.clearRect(0,0,Game.width,Game.height);
-    canvas.font = "bold 80px topmodern" ;
+    canvas.font = " 65px alienation" ;
     var measure = canvas.measureText(text);  
     canvas.fillStyle = "white";
-    canvas.fillText(text,Game.width/2 - measure.width/2,Game.height/2);
-    canvas.font = " bold 25px topmodern";
+    canvas.fillText(text,Game.width/2 - measure.width/2,Game.height/2-30);
+    canvas.font = " 20px alienation";
     var measure2 = canvas.measureText(text2);
-    canvas.fillText(text2,Game.width/2 - measure2.width/2,Game.height/2 + 50);
+    canvas.fillText(text2,Game.width/2 - measure2.width/2,Game.height/2+15);
+
+	
   };
 };
 
@@ -100,6 +106,12 @@ var GameBoard = function GameBoard(level_number) {
   };
 
   this.step = function(dt) { 
+  
+  //Add boss
+    if(Math.random()*1000<1) { //chance of boss appearing
+        var boss=this.addSprite('boss', -32, 60, { dx: +2 }); //Draw ship offscreen and move to right, speed set here
+    };
+  
     this.removed_objs = [];
     this.iterate(function() { 
         if(!this.step(dt)) this.die();
@@ -116,8 +128,8 @@ var GameBoard = function GameBoard(level_number) {
     this.iterate(function() { this.draw(canvas); });
  
   
-  var scoretext = "Score: " + this.score;
-    canvas.font="20px topmodern";
+  var scoretext = "Destroyed: " + this.score;
+    canvas.font="12px alienated";
     canvas.fillText(scoretext,10,50);
   };
   
@@ -134,16 +146,16 @@ var GameBoard = function GameBoard(level_number) {
        return board.collision(obj,this) ? this : false;
     });
   };
-
+//load player sprite
   this.loadLevel = function(level) {
     this.objects = [];
     this.player = this.addSprite('player', // Sprite
-                                 Game.width/2, // X
+                                 Game.width/2,  // X
                                  Game.height - Sprites.map['player'].h -10); // Y
 								 				 
 		
 		
-
+//Load alien sprites
 
     var flock = this.add(new AlienFlock());
     for(var y=0,rows=level.length;y<rows;y++) {
@@ -152,22 +164,13 @@ var GameBoard = function GameBoard(level_number) {
         if(alien) { 
           this.addSprite('alien' + level[y][x], // Which Sprite
                          (alien.w+10)*x,  // X
-                         alien.h*y -370,       // Y
+                         alien.h*y -340,       // Y
                          { flock: flock }); // Options
         }
       }
 	
     }
   };
-  //background canvas olarakmı iyi yoksa direk indextenmi
-  //mesela damage variable nasıl taşınıcak buraya
- // planet nasıl ekliycem ( obje nasıl ekleniyo),başka oyundan başka oyuna kod taşımak nasıl olur 
-//nasıl sadece ön sıra ateş edicek sor
-//player hareketi nasıl yumuşar
-//uzaylı yerleri bi garip niye -370 gerekti
-//alienlar fazlamı büyük oldu
-//her bastığında ateş etmesini istiyorum tek seferde 2 ateş etmesin her seferinde basmak gereksin space'e
-//class nasıl yaratılıyo öğrendiğim şekle hiç benzemiyo burdaki
 
 
 
@@ -179,13 +182,6 @@ var GameBoard = function GameBoard(level_number) {
 };
 
 
-//planet trials
-this.loadLevel = function(level) {
-    this.objects = [];
-    this.planet = this.addSprite('planet', // Sprite
-                                 (Game.width - planet.w)/2, // X
-                                 Game.height - (Sprites.map['planet'].h +30)); }; // Y
-//planet trials
 
 var GameAudio = new function() {
   this.load_queue = [];
@@ -200,6 +196,7 @@ var GameAudio = new function() {
     audio_channels[a]['finished'] = -1;	
   }
 
+//load game audio
   this.load = function(files,callback) {
     var audioCallback = function() { GameAudio.finished(callback); }
 
